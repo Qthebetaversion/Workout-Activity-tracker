@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Workout Tracker</title>
+    <meta name="theme-color" content="#1f2937">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR3ltIFdvcmtvdXQgVHJhY2tlciIsInNob3J0X25hbWUiOiJHeW0gVHJhY2tlciIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWYyOTM3IiwidGhlbWVfY29sb3IiOiIjMWYyOTM3IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1USTRJaUJvWldsbmFIUTlJakV5T0NJZ2RtbGxkMEp2ZUQwaU1DQXdJREV5T0NBeU9EZ2lJR1pwYkd3OUluZG9hWFJsSWo0OGNHRjBhQ0JrUFNKTk1Ua3VNak0xSURFeElqNWJJbTFwYm1samIyNXpYU0lnZXowOVNWSnlVbVY0VVc5bVNVWTFjVzFLZDJKdVVFWlJVVlZOUTBoU1RWVmhRVkYwV1VGVU1VVldVVTltVW1Gak5FbFNRVUUwVUVSVlptNXdTa1pYVlM4aVBqeDBaWGgwSUhrOUlqRTRJaUJtYVd4cy9EOWlUREJCTVRWWUlpQm1iMjUwTFdaaGJXbHNlVDBpYldGMGFFTnVaVUZKVEVRdE4zVndiQ0lnUUZZaVpFSmhjMWx2YXlJZ1ptOXVkQzN6YVhwbFBTSnlkSFJGTWtKaVRHeHFNa05pZWk0eU5rRlZTRTVKTlM1cmR5SStWMDlTUzA5VlZEd3ZkR1Y0ZEQ0OEwzTjJaejQ9IiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjEyOHgxMjgifV19">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 10px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background: rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            border-radius: 15px;
+        }
+        
+        .day-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .day-btn {
+            padding: 10px 15px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid #3b82f6;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        .day-btn.active {
+            background: #3b82f6;
+            transform: scale(1.05);
+        }
+        
+        .workout-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+        
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .exercise-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .exercise-item.completed {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .exercise-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .exercise-reps {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+        
+        .weight-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .weight-input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 5px;
+            padding: 5px 8px;
+            color: white;
+            width: 60px;
+            font-size: 12px;
+        }
+        
+        .weight-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .last-weight {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        
+        .check-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3b82f6;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+        }
+        
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .video-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .video-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .video-input input {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 5px;
+            padding: 10px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .video-input input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .add-video-btn {
+            background: #3b82f6;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .video-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .video-link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 14px;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .delete-video {
+            background: #ef4444;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .reset-btn {
+            background: #ef4444;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .sidebar.open {
+            right: 0;
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3b82f6;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .sidebar-content {
+            margin-top: 40px;
+        }
+        
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .measurement-form {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            color: #9ca3af;
+            font-size: 12px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .save-measurement-btn {
+            background: #10b981;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .measurements-history {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .history-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 15px;
+        }
+        
+        .measurement-entry {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .entry-date {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .entry-measurements {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 13px;
+        }
+        
+        .measurement-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .measurement-label {
+            color: #9ca3af;
+        }
+        
+        .measurement-value {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .delete-entry {
+            background: #ef4444;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 11px;
+            margin-top: 8px;
+            float: right;
+        }
+        
+        .progress-chart {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 15px;
+        }
+        
+        .chart-item {
+            margin-bottom: 15px;
+        }
+        
+        .chart-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .chart-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.show {
+            display: block;
+        }
+        
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .sidebar-toggle {
+                top: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 16px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .stats {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+        
+        .youtube-embed {
+            margin-top: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .youtube-embed iframe {
+            width: 100%;
+            height: 200px;
+            border: none;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+            
+            .day-btn {
+                font-size: 11px;
+                padding: 8px 12px;
+            }
+            
+            .exercise-name {
+                font-size: 13px;
+            }
+            
+            .weight-input {
+                width: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+    
+    <button class="sidebar-toggle" onclick="toggleSidebar()">📊</button>
+    
+    <div class="sidebar" id="sidebar">
+        <button class="sidebar-close" onclick="closeSidebar()">×</button>
+        <div class="sidebar-content">
+            <h2 class="sidebar-title">📏 Body Measurements</h2>
+            
+            <div class="measurement-form">
+                <div class="form-group">
+                    <label class="form-label">Body Weight</label>
+                    <input type="number" class="form-input" id="bodyWeight" placeholder="Enter weight (lbs/kg)" step="0.1">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Chest</label>
+                        <input type="number" class="form-input" id="chest" placeholder="inches/cm" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Waist</label>
+                        <input type="number" class="form-input" id="waist" placeholder="inches/cm" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Left Arm</label>
+                        <input type="number" class="form-input" id="leftArm" placeholder="inches/cm" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Right Arm</label>
+                        <input type="number" class="form-input" id="rightArm" placeholder="inches/cm" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Left Thigh</label>
+                        <input type="number" class="form-input" id="leftThigh" placeholder="inches/cm" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Right Thigh</label>
+                        <input type="number" class="form-input" id="rightThigh" placeholder="inches/cm" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Shoulders</label>
+                        <input type="number" class="form-input" id="shoulders" placeholder="inches/cm" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hips</label>
+                        <input type="number" class="form-input" id="hips" placeholder="inches/cm" step="0.1">
+                    </div>
+                </div>
+                
+                <button class="save-measurement-btn" onclick="saveMeasurement()">💾 Save Measurement</button>
+            </div>
+            
+            <div class="progress-chart" id="progressChart">
+                <h3 class="chart-title">📈 Progress Overview</h3>
+                <div id="chartContent">
+                    <p style="color: #9ca3af; text-align: center;">Add measurements to see progress</p>
+                </div>
+            </div>
+            
+            <div class="measurements-history">
+                <h3 class="history-title">📋 Measurement History</h3>
+                <div id="measurementHistory">
+                    <p style="color: #9ca3af; text-align: center;">No measurements recorded yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>💪 Gym Workout Tracker</h1>
+            <p>Track your progress, build muscle, get stronger</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalExercises">0</div>
+                    <div class="stat-label">Exercises</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completedExercises">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completionRate">0%</div>
+                    <div class="stat-label">Progress</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="day-selector">
+            <button class="day-btn active" data-day="day1">Day 1 - Chest/Triceps</button>
+            <button class="day-btn" data-day="day2">Day 2 - Back/Biceps</button>
+            <button class="day-btn" data-day="day3">Day 3 - Legs/Core</button>
+            <button class="day-btn" data-day="day4">Day 4 - Shoulders/Core</button>
+            <button class="day-btn" data-day="day5">Day 5 - Push</button>
+            <button class="day-btn" data-day="day6">Day 6 - Pull</button>
+        </div>
+        
+        <div id="workoutContent"></div>
+        
+        <div class="video-section">
+            <div class="section-header">
+                <h2 class="section-title">📺 Tutorial Videos</h2>
+            </div>
+            <div class="video-input">
+                <input type="text" id="videoTitle" placeholder="Exercise name...">
+                <input type="text" id="videoUrl" placeholder="YouTube URL...">
+                <button class="add-video-btn" onclick="addVideo()">Add</button>
+            </div>
+            <div id="videoList"></div>
+        </div>
+        
+        <button class="reset-btn" onclick="resetDay()">Reset Today's Workout</button>
+    </div>
+    
+    <script>
+        // Workout data
+        const workoutData = {
+            day1: {
+                title: "Day 1 - Chest + Triceps",
+                sections: [
+                    {
+                        name: "Chest",
+                        exercises: [
+                            { name: "Bench Press", reps: "4×8-10", id: "d1_bench" },
+                            { name: "Incline Dumbbell Press", reps: "3×10", id: "d1_incline" },
+                            { name: "Chest Fly", reps: "3×12", id: "d1_fly" }
+                        ]
+                    },
+                    {
+                        name: "Triceps",
+                        exercises: [
+                            { name: "Tricep Pushdown", reps: "4×10", id: "d1_pushdown" },
+                            { name: "Overhead Dumbbell Extension", reps: "3×12", id: "d1_overhead" }
+                        ]
+                    }
+                ]
+            },
+            day2: {
+                title: "Day 2 - Back + Biceps",
+                sections: [
+                    {
+                        name: "Back",
+                        exercises: [
+                            { name: "Lat Pulldown", reps: "4×10", id: "d2_lat" },
+                            { name: "Seated Row", reps: "3×10", id: "d2_row" },
+                            { name: "Dumbbell Row", reps: "3×12", id: "d2_dbrow" }
+                        ]
+                    },
+                    {
+                        name: "Biceps",
+                        exercises: [
+                            { name: "Barbell Curl", reps: "3×10", id: "d2_curl" },
+                            { name: "Hammer Curl", reps: "3×12", id: "d2_hammer" }
+                        ]
+                    },
+                    {
+                        name: "Forearms",
+                        exercises: [
+                            { name: "Wrist Curls", reps: "3×15", id: "d2_wrist" },
+                            { name: "Reverse Wrist Curls", reps: "3×15", id: "d2_reverse" }
+                        ]
+                    }
+                ]
+            },
+            day3: {
+                title: "Day 3 - Legs + Core",
+                sections: [
+                    {
+                        name: "Legs",
+                        exercises: [
+                            { name: "Squats", reps: "4×10", id: "d3_squat" },
+                            { name: "Leg Press", reps: "3×12", id: "d3_press" },
+                            { name: "Romanian Deadlifts", reps: "3×10", id: "d3_rdl" },
+                            { name: "Hip Thrusts", reps: "3×12", id: "d3_hip" },
+                            { name: "Calf Raises", reps: "3×15", id: "d3_calf" }
+                        ]
+                    },
+                    {
+                        name: "Core",
+                        exercises: [
+                            { name: "Hanging Leg Raises", reps: "3×12", id: "d3_hanging" },
+                            { name: "Russian Twists", reps: "3×30s", id: "d3_twists" }
+                        ]
+                    }
+                ]
+            },
+            day4: {
+                title: "Day 4 - Shoulders + Core",
+                sections: [
+                    {
+                        name: "Shoulders",
+                        exercises: [
+                            { name: "Overhead Press", reps: "4×10", id: "d4_press" },
+                            { name: "Lateral Raises", reps: "3×12", id: "d4_lateral" },
+                            { name: "Rear Delt Fly", reps: "3×12", id: "d4_rear" }
+                        ]
+                    },
+                    {
+                        name: "Core",
+                        exercises: [
+                            { name: "Plank", reps: "3×1min", id: "d4_plank" },
+                            { name: "Bicycle Crunch", reps: "3×20", id: "d4_bicycle" }
+                        ]
+                    }
+                ]
+            },
+            day5: {
+                title: "Day 5 - Push (Chest/Shoulders/Triceps)",
+                sections: [
+                    {
+                        name: "Push Volume",
+                        exercises: [
+                            { name: "Incline Barbell Press", reps: "4×12", id: "d5_incline" },
+                            { name: "Dumbbell Shoulder Press", reps: "3×12", id: "d5_shoulder" },
+                            { name: "Dips", reps: "3×10-12", id: "d5_dips" },
+                            { name: "Cable Lateral Raises", reps: "3×15", id: "d5_lateral" },
+                            { name: "Diamond Push-ups", reps: "3×max", id: "d5_diamond" },
+                            { name: "Cable Tricep Extensions", reps: "3×15", id: "d5_extensions" }
+                        ]
+                    }
+                ]
+            },
+            day6: {
+                title: "Day 6 - Pull (Back/Biceps/Traps)",
+                sections: [
+                    {
+                        name: "Pull Focus",
+                        exercises: [
+                            { name: "Pull-ups/Chin-ups", reps: "4×8-12", id: "d6_pullups" },
+                            { name: "T-Bar Row", reps: "3×10", id: "d6_tbar" },
+                            { name: "Cable Row (various grips)", reps: "3×12", id: "d6_cable" },
+                            { name: "Shrugs", reps: "3×12", id: "d6_shrugs" },
+                            { name: "Preacher Curls", reps: "3×10", id: "d6_preacher" },
+                            { name: "Cable Hammer Curls", reps: "3×12", id: "d6_hammer" },
+                            { name: "Farmer's Walks", reps: "3×30-40 steps", id: "d6_farmers" },
+                            { name: "Plate Pinches", reps: "3×30s", id: "d6_pinches" }
+                        ]
+                    }
+                ]
+            }
+        };
+        
+        let currentDay = 'day1';
+        let exerciseData = JSON.parse(localStorage.getItem('exerciseData') || '{}');
+        let videoData = JSON.parse(localStorage.getItem('videoData') || '[]');
+        let measurementData = JSON.parse(localStorage.getItem('measurementData') || '[]');
+        
+        function saveData() {
+            localStorage.setItem('exerciseData', JSON.stringify(exerciseData));
+        }
+        
+        function saveVideoData() {
+            localStorage.setItem('videoData', JSON.stringify(videoData));
+        }
+        
+        function saveMeasurementData() {
+            localStorage.setItem('measurementData', JSON.stringify(measurementData));
+        }
+        
+        function switchDay(day) {
+            currentDay = day;
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-day="${day}"]`).classList.add('active');
+            renderWorkout();
+            updateStats();
+        }
+        
+        function renderWorkout() {
+            const workout = workoutData[currentDay];
+            const content = document.getElementById('workoutContent');
+            
+            content.innerHTML = workout.sections.map(section => `
+                <div class="workout-section">
+                    <div class="section-header">
+                        <h2 class="section-title">${section.name}</h2>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${getSectionProgress(section)}%"></div>
+                        </div>
+                    </div>
+                    ${section.exercises.map(exercise => renderExercise(exercise)).join('')}
+                </div>
+            `).join('');
+        }
+        
+        function renderExercise(exercise) {
+            const data = exerciseData[exercise.id] || { completed: false, weight: '', lastWeight: '' };
+            const isCompleted = data.completed ? 'completed' : '';
+            
+            return `
+                <div class="exercise-item ${isCompleted}">
+                    <div class="exercise-header">
+                        <div class="exercise-name">${exercise.name}</div>
+                        <div class="exercise-reps">${exercise.reps}</div>
+                    </div>
+                    <div class="weight-input-container">
+                        <input type="number" class="weight-input" placeholder="Weight" 
+                               value="${data.weight}" 
+                               onchange="updateWeight('${exercise.id}', this.value)">
+                        <span>lbs/kg</span>
+                        ${data.lastWeight ? `<span class="last-weight">Last: ${data.lastWeight}</span>` : ''}
+                    </div>
+                    <div class="check-container">
+                        <div class="checkbox ${data.completed ? 'checked' : ''}" 
+                             onclick="toggleComplete('${exercise.id}')"></div>
+                        <span>Complete Set</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function getSectionProgress(section) {
+            const completed = section.exercises.filter(ex => exerciseData[ex.id]?.completed).length;
+            return Math.round((completed / section.exercises.length) * 100);
+        }
+        
+        function toggleComplete(exerciseId) {
+            if (!exerciseData[exerciseId]) {
+                exerciseData[exerciseId] = { completed: false, weight: '', lastWeight: '' };
+            }
+            
+            exerciseData[exerciseId].completed = !exerciseData[exerciseId].completed;
+            
+            // Save current weight as last weight when completing
+            if (exerciseData[exerciseId].completed && exerciseData[exerciseId].weight) {
+                exerciseData[exerciseId].lastWeight = exerciseData[exerciseId].weight;
+            }
+            
+            saveData();
+            renderWorkout();
+            updateStats();
+        }
+        
+        function updateWeight(exerciseId, weight) {
+            if (!exerciseData[exerciseId]) {
+                exerciseData[exerciseId] = { completed: false, weight: '', lastWeight: '' };
+            }
+            exerciseData[exerciseId].weight = weight;
+            saveData();
+        }
+        
+        function updateStats() {
+            const workout = workoutData[currentDay];
+            const allExercises = workout.sections.flatMap(s => s.exercises);
+            const completed = allExercises.filter(ex => exerciseData[ex.id]?.completed).length;
+            const total = allExercises.length;
+            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('totalExercises').textContent = total;
+            document.getElementById('completedExercises').textContent = completed;
+            document.getElementById('completionRate').textContent = rate + '%';
+        }
+        
+        function addVideo() {
+            const title = document.getElementById('videoTitle').value.trim();
+            const url = document.getElementById('videoUrl').value.trim();
+            
+            if (title && url) {
+                const videoId = extractYouTubeId(url);
+                if (videoId) {
+                    videoData.push({ title, url, id: videoId });
+                    saveVideoData();
+                    renderVideos();
+                    document.getElementById('videoTitle').value = '';
+                    document.getElementById('videoUrl').value = '';
+                } else {
+                    alert('Please enter a valid YouTube URL');
+                }
+            }
+        }
+        
+        function extractYouTubeId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+        
+        function renderVideos() {
+            const videoList = document.getElementById('videoList');
+            videoList.innerHTML = videoData.map((video, index) => `
+                <div class="video-item">
+                    <a href="#" class="video-link" onclick="showVideo('${video.id}', '${video.title}', ${index})">${video.title}</a>
+                    <button class="delete-video" onclick="deleteVideo(${index})">Delete</button>
+                </div>
+                <div id="embed-${index}" class="youtube-embed" style="display: none;">
+                    <iframe src="https://www.youtube.com/embed/${video.id}" allowfullscreen></iframe>
+                </div>
+            `).join('');
+        }
+        
+        function showVideo(videoId, title, index) {
+            const embed = document.getElementById(`embed-${index}`);
+            if (embed.style.display === 'none') {
+                // Hide all other embeds
+                document.querySelectorAll('.youtube-embed').forEach(e => e.style.display = 'none');
+                embed.style.display = 'block';
+            } else {
+                embed.style.display = 'none';
+            }
+        }
+        
+        function deleteVideo(index) {
+            if (confirm('Delete this video?')) {
+                videoData.splice(index, 1);
+                saveVideoData();
+                renderVideos();
+            }
+        }
+        
+        function resetDay() {
+            if (confirm('Reset all exercises for today? This will clear completion status but keep weights.')) {
+                const workout = workoutData[currentDay];
+                workout.sections.forEach(section => {
+                    section.exercises.forEach(exercise => {
+                        if (exerciseData[exercise.id]) {
+                            exerciseData[exercise.id].completed = false;
+                        }
+                    });
+                });
+                saveData();
+                renderWorkout();
+                updateStats();
+            }
+        }
+        
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                sidebar.classList.add('open');
+                overlay.classList.add('show');
+                renderMeasurementHistory();
+                renderProgressChart();
+            }
+        }
+        
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+        
+        function saveMeasurement() {
+            const bodyWeight = document.getElementById('bodyWeight').value;
+            const chest = document.getElementById('chest').value;
+            const waist = document.getElementById('waist').value;
+            const leftArm = document.getElementById('leftArm').value;
+            const rightArm = document.getElementById('rightArm').value;
+            const leftThigh = document.getElementById('leftThigh').value;
+            const rightThigh = document.getElementById('rightThigh').value;
+            const shoulders = document.getElementById('shoulders').value;
+            const hips = document.getElementById('hips').value;
+            
+            if (!bodyWeight && !chest && !waist && !leftArm && !rightArm && !leftThigh && !rightThigh && !shoulders && !hips) {
+                alert('Please enter at least one measurement');
+                return;
+            }
+            
+            const measurement = {
+                date: new Date().toISOString().split('T')[0],
+                timestamp: Date.now(),
+                bodyWeight: bodyWeight || null,
+                chest: chest || null,
+                waist: waist || null,
+                leftArm: leftArm || null,
+                rightArm: rightArm || null,
+                leftThigh: leftThigh || null,
+                rightThigh: rightThigh || null,
+                shoulders: shoulders || null,
+                hips: hips || null
+            };
+            
+            measurementData.unshift(measurement);
+            saveMeasurementData();
+            
+            // Clear form
+            document.querySelectorAll('.form-input').forEach(input => input.value = '');
+            
+            renderMeasurementHistory();
+            renderProgressChart();
+            
+            alert('Measurements saved successfully! 💪');
+        }
+        
+        function renderMeasurementHistory() {
+            const historyDiv = document.getElementById('measurementHistory');
+            
+            if (measurementData.length === 0) {
+                historyDiv.innerHTML = '<p style="color: #9ca3af; text-align: center;">No measurements recorded yet</p>';
+                return;
+            }
+            
+            historyDiv.innerHTML = measurementData.map((measurement, index) => `
+                <div class="measurement-entry">
+                    <div class="entry-date">${new Date(measurement.date).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    })}</div>
+                    <div class="entry-measurements">
+                        ${measurement.bodyWeight ? `<div class="measurement-item"><span class="measurement-label">Weight:</span><span class="measurement-value">${measurement.bodyWeight}</span></div>` : ''}
+                        ${measurement.chest ? `<div class="measurement-item"><span class="measurement-label">Chest:</span><span class="measurement-value">${measurement.chest}"</span></div>` : ''}
+                        ${measurement.waist ? `<div class="measurement-item"><span class="measurement-label">Waist:</span><span class="measurement-value">${measurement.waist}"</span></div>` : ''}
+                        ${measurement.leftArm ? `<div class="measurement-item"><span class="measurement-label">L Arm:</span><span class="measurement-value">${measurement.leftArm}"</span></div>` : ''}
+                        ${measurement.rightArm ? `<div class="measurement-item"><span class="measurement-label">R Arm:</span><span class="measurement-value">${measurement.rightArm}"</span></div>` : ''}
+                        ${measurement.leftThigh ? `<div class="measurement-item"><span class="measurement-label">L Thigh:</span><span class="measurement-value">${measurement.leftThigh}"</span></div>` : ''}
+                        ${measurement.rightThigh ? `<div class="measurement-item"><span class="measurement-label">R Thigh:</span><span class="measurement-value">${measurement.rightThigh}"</span></div>` : ''}
+                        ${measurement.shoulders ? `<div class="measurement-item"><span class="measurement-label">Shoulders:</span><span class="measurement-value">${measurement.shoulders}"</span></div>` : ''}
+                        ${measurement.hips ? `<div class="measurement-item"><span class="measurement-label">Hips:</span><span class="measurement-value">${measurement.hips}"</span></div>` : ''}
+                    </div>
+                    <button class="delete-entry" onclick="deleteMeasurement(${index})">Delete</button>
+                </div>
+            `).join('');
+        }
+        
+        function renderProgressChart() {
+            const chartDiv = document.getElementById('chartContent');
+            
+            if (measurementData.length < 2) {
+                chartDiv.innerHTML = '<p style="color: #9ca3af; text-align: center;">Add at least 2 measurements to see progress</p>';
+                return;
+            }
+            
+            const latest = measurementData[0];
+            const oldest = measurementData[measurementData.length - 1];
+            
+            const measurements = [
+                { label: 'Body Weight', key: 'bodyWeight', unit: '' },
+                { label: 'Chest', key: 'chest', unit: '"' },
+                { label: 'Waist', key: 'waist', unit: '"' },
+                { label: 'Left Arm', key: 'leftArm', unit: '"' },
+                { label: 'Right Arm', key: 'rightArm', unit: '"' },
+                { label: 'Shoulders', key: 'shoulders', unit: '"' },
+                { label: 'Hips', key: 'hips', unit: '"' }
+            ];
+            
+            const progressItems = measurements
+                .filter(m => latest[m.key] && oldest[m.key])
+                .map(m => {
+                    const change = parseFloat(latest[m.key]) - parseFloat(oldest[m.key]);
+                    const changeText = change >= 0 ? `+${change.toFixed(1)}` : change.toFixed(1);
+                    const changeColor = change >= 0 ? '#10b981' : '#ef4444';
+                    
+                    return `
+                        <div class="chart-item">
+                            <div class="chart-label">
+                                <span>${m.label}</span>
+                                <span style="color: ${changeColor}">${changeText}${m.unit}</span>
+                            </div>
+                            <div class="chart-bar">
+                                <div class="chart-fill" style="width: ${Math.min(Math.abs(change) * 10, 100)}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            
+            if (progressItems.length === 0) {
+                chartDiv.innerHTML = '<p style="color: #9ca3af; text-align: center;">No comparable measurements found</p>';
+            } else {
+                chartDiv.innerHTML = progressItems.join('');
+            }
+        }
+        
+        function deleteMeasurement(index) {
+            if (confirm('Delete this measurement entry?')) {
+                measurementData.splice(index, 1);
+                saveMeasurementData();
+                renderMeasurementHistory();
+                renderProgressChart();
+            }
+        }
+        
+        // Event listeners
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchDay(btn.dataset.day));
+        });
+        
+        document.getElementById('videoUrl').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addVideo();
+        });
+        
+        // Initialize
+        renderWorkout();
+        renderVideos();
+        updateStats();
+        
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCJpbnN0YWxsIiwgZnVuY3Rpb24oZXZlbnQpIHsKICBjb25zb2xlLmxvZygiU2VydmljZSBXb3JrZXIgaW5zdGFsbGVkIik7Cn0pOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCJmZXRjaCIsIGZ1bmN0aW9uKGV2ZW50KSB7CiAgLy8gUmV0dXJuIGZldGNoIGFzIGlzIGZvciByZWFsIGZ1bmN0aW9uYWxpdHkKICByZXR1cm4gZmV0Y2goZXZlbnQucmVxdWVzdCk7Cn0pOw==')
+                .then(() => console.log('SW registered'))
+                .catch(() => console.log('SW registration failed'));
+        }
+    </script>
+</body>
+</html>
